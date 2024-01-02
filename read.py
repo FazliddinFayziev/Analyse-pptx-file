@@ -1,3 +1,6 @@
+# Analyse pptx file and returns json data with these values:
+# text_content, width (width of text frame), height (width of text frame), font_size (font size will be set to None in default)
+
 from pptx import Presentation
 import json
 
@@ -41,3 +44,5 @@ slides_data = get_text_boxes_info('slide.pptx')
 
 # Print the resulting JSON data
 print(json.dumps(slides_data, indent=2))
+
+# Correct
