@@ -23,8 +23,14 @@ def get_text_boxes_info(pptx_path):
                 font_size = None
 
                 for paragraph in text_frame.paragraphs:
+                    # font_size = paragraph.pt
                     for run in paragraph.runs:
                         text_content += run.text
+                        
+                        font_size = run.font.size
+                        # Print font size if it's set
+                        if font_size:
+                            print(f"Font size: {font_size}")
 
                 text_box_info = {
                     'text_content': text_content,
@@ -40,7 +46,7 @@ def get_text_boxes_info(pptx_path):
     return all_slides
 
 # Example usage
-slides_data = get_text_boxes_info('slide.pptx')
+slides_data = get_text_boxes_info('education.pptx')
 
 # Print the resulting JSON data
 print(json.dumps(slides_data, indent=2))
