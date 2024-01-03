@@ -23,25 +23,6 @@ def replace_text_in_text_frames(pptx_path, new_texts):
                 run = p.add_run()
                 run.text = text_content_data["text_content"]
 
-                # Check if font_size is specified, otherwise use default (12 points)
-                font_size = text_content_data.get("font_size", 12)
-
-                # Check if width is specified to handle text overflow
-                width = text_content_data.get("width", None)
-
-                if font_size is not None:
-                    if width and font_size:
-                        # Calculate the available width for the text based on the shape's width
-                        available_width = shape.width - width
-                        if available_width < 0:
-                            # If the available width is negative, adjust the font size to fit the text
-                            reduction_ratio = shape.width / (shape.width - available_width)
-                            run.font.size = Pt(max(1, font_size / reduction_ratio))  # Ensure font size is at least 1
-                        else:
-                            run.font.size = Pt(font_size)
-                    else:
-                        run.font.size = Pt(font_size)
-
                 text_index += 1
 
         prs.save('modified_education_presentation_fixed.pptx')
