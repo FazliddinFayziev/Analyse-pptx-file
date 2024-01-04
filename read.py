@@ -1,6 +1,3 @@
-# Analyse pptx file and returns json data with these values:
-# text_content, width (width of text frame), height (width of text frame), font_size (font size will be set to None in default)
-
 from pptx import Presentation
 import json
 
@@ -22,11 +19,14 @@ def get_text_boxes_info(pptx_path):
                 height = shape.height
                 font_size = None
 
-                for paragraph in text_frame.paragraphs:
-                    # font_size = paragraph.pt
-                    for run in paragraph.runs:
+                for paragraph_index, paragraph in enumerate(text_frame.paragraphs):
+                    for run_index, run in enumerate(paragraph.runs):
                         text_content += run.text
-                        
+
+                        # Add newline character if it's the end of a paragraph
+                        if run_index == len(paragraph.runs) - 1 and paragraph_index != len(text_frame.paragraphs) - 1:
+                            text_content += "\n"
+
                         font_size = run.font.size
                         # Print font size if it's set
                         if font_size:
@@ -46,9 +46,7 @@ def get_text_boxes_info(pptx_path):
     return all_slides
 
 # Example usage
-slides_data = get_text_boxes_info('education.pptx')
+slides_data = get_text_boxes_info('sample.pptx')
 
 # Print the resulting JSON data
 print(json.dumps(slides_data, indent=2))
-
-# Correct

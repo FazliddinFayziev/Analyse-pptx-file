@@ -1,15 +1,19 @@
-from pptx import Presentation
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextContainer, LTChar, LTLine, LAParams
+import os
 
-pptx_file = 'education.pptx'
-presentation = Presentation(pptx_file)
+path = r'outline.pdf'
 
-for slide_number, slide in enumerate(presentation.slides):
-    # Iterate through each shape in the slide
-    for shape in slide.shapes:
-        if shape.has_text_frame:
-            # Iterate through each paragraph in the text frame
-            for paragraph in shape.text_frame.paragraphs:
-                font_size = paragraph.font.size
-                # font_size is in Pt, convert to a human-readable format if necessary
-                font_size_pt = font_size.pt if font_size else 'Default size'
-                print(f"Slide {slide_number + 1}, Text: {paragraph.text}, Font size: {font_size_pt}")
+Extract_Data = []
+
+for page_layout in extract_pages(path):
+    for element in page_layout:
+        if isinstance(element, LTTextContainer):
+            for text_line in element:
+                for character in text_line:
+                    if isinstance(character, LTChar):
+                        Font_size = round(character.size)
+            Extract_Data.append([Font_size, element.get_text()])
+
+Extract_Data.pop(0)
+print(Extract_Data)
