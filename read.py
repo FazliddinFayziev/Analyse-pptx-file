@@ -11,6 +11,7 @@ def get_text_boxes_info(pptx_path):
             'shapes': []
         }
 
+        index = 0
         for shape in slide.shapes:
             if shape.has_text_frame:
                 text_content = ""
@@ -33,6 +34,7 @@ def get_text_boxes_info(pptx_path):
                             print(f"Font size: {font_size}")
 
                 text_box_info = {
+                    'id': index,
                     'text_content': text_content,
                     'width': width,
                     'height': height,
@@ -40,13 +42,14 @@ def get_text_boxes_info(pptx_path):
                 }
 
                 slide_data['shapes'].append(text_box_info)
+                index += 1
 
         all_slides.append(slide_data)
 
     return all_slides
 
 # Example usage
-slides_data = get_text_boxes_info('sample.pptx')
+slides_data = get_text_boxes_info('example.pptx')
 
 # Print the resulting JSON data
 print(json.dumps(slides_data, indent=2))

@@ -1,21 +1,19 @@
-import fitz  # PyMuPDF library
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextContainer, LTChar, LTLine, LAParams
+import os
 
-def extract_text_and_font(pdf_path):
-    doc = fitz.open(pdf_path)
+path = r'outline.pdf'
 
-    for page_number in range(doc.page_count):
-        page = doc[page_number]
-        text_blocks = page.get_text("blocks")
+Extract_Data = []
 
-        for block in text_blocks:
-            for line in block:
-                font_size = line["size"]
-                text_content = line["text"]
-                
-                print(f"Page {page_number + 1}, Font Size: {font_size}, Text Content: {text_content}")
+for page_layout in extract_pages(path):
+    for element in page_layout:
+        if isinstance(element, LTTextContainer):
+            for text_line in element:
+                for character in text_line:
+                    if isinstance(character, LTChar):
+                        Font_size = round(character.size)
+            Extract_Data.append([Font_size, element.get_text()])
 
-    doc.close()
-
-# Example usage
-pdf_path = 'done.pdf' 
-extract_text_and_font(pdf_path)
+# Extract_Data.pop(0)
+print(Extract_Data)
