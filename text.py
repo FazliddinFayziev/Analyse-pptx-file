@@ -1,33 +1,63 @@
 from pptx import Presentation
-from pptx.enum.text import PP_ALIGN
-from pptx.util import Inches
+import json
 
-# Function to get font size of a text run
-def get_font_size(run):
-    try:
-        font_size = run.font.size.pt if run.font.size else None
-        return font_size
-    except Exception as e:
-        print(f"Error accessing font size: {e}")
-        return None
+def get_shapes_info(pptx_path):
+    presentation = Presentation(pptx_path)
+    all_slides = []
 
-# Function to get font sizes from a slide
-def get_text_boxes_font_sizes(slide):
-    font_sizes = []
+    for slide_index, slide in enumerate(presentation.slides):
+        slide_data = {
+            'slide_index': slide_index + 1,
+            'shapes': [],
+            'image_path': []
+        }
 
-    for shape in slide.shapes:
-        if shape.has_text_frame:
-            for paragraph in shape.text_frame.paragraphs:
-                for run in paragraph.runs:
-                    font_size = get_font_size(run)
-                    font_sizes.append(font_size)
+        index = 0
+        for shape in slide.shapes:
+            shape_info = {
+                'id': index,
+                'width': shape.width,
+                'height': shape.height
+            }
 
-    return font_sizes
+            if shape.has_text_frame:
+                shape_info['text_content'] = ""
+                shape_info['font_size'] = None
+
+                text_frame = shape.text_frame
+
+                for paragraph_index, paragraph in enumerate(text_frame.paragraphs):
+                    for run_index, run in enumerate(paragraph.runs):
+                        shape_info['text_content'] += run.text
+
+                        # Add newline character if it's the end of a paragraph
+                        if run_index == len(paragraph.runs) - 1 and paragraph_index != len(text_frame.paragraphs) - 1:
+                            shape_info['text_content'] += "\n"
+
+                        # Check for font size
+                        if hasattr(run, 'font') and hasattr(run.font, 'size'):
+                            shape_info['font_size'] = run.font.size if run.font.size else None
+
+            elif shape.shape_type == 13:
+                image_info = {
+                    "path": None,
+                    "width": shape.width,
+                    "height": shape.height,
+                    "top": shape.top,
+                    "left": shape.left
+                }
+                slide_data['image_path'].append(image_info)
+
+            if shape.shape_type != 13:  # Exclude image information from shapes list
+                slide_data['shapes'].append(shape_info)
+                index += 1
+
+        all_slides.append(slide_data)
+
+    return all_slides
 
 # Example usage
-pptx_path = 'sample.pptx'
-presentation = Presentation(pptx_path)
+slides_data = get_shapes_info('example.pptx')
 
-for slide_index, slide in enumerate(presentation.slides):
-    font_sizes = get_text_boxes_font_sizes(slide)
-    print(f"Slide {slide_index + 1} Font Sizes: {font_sizes}")
+# Print the resulting JSON data
+print(json.dumps(slides_data, indent=2))
