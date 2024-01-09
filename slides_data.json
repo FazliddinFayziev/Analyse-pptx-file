@@ -1,0 +1,22 @@
+[
+    {
+        "slide_index": 1,
+        "background_image": "https://www.seawaylogistics-bg.com/sites/default/files/seawaylogistic_airt_ransport_0.jpg?1392559421",
+        "shapes": [
+            {
+                "id": 2,
+                "text_content": "New Slide Title",
+                "font_size": 24
+            }
+        ],
+        "image_path": [
+            {
+                "path": "https://www.seawaylogistics-bg.com/sites/default/files/seawaylogistic_airt_ransport_0.jpg?1392559421",
+                "left": 2,
+                "top": 1,
+                "width": 5.5,
+                "height": 4
+            }
+        ]
+    }
+]

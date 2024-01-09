@@ -57,7 +57,11 @@ def get_shapes_info(pptx_path):
     return all_slides
 
 # Example usage
-slides_data = get_shapes_info('example.pptx')
+slides_data = get_shapes_info('plan.pptx')
 
-# Print the resulting JSON data
-print(json.dumps(slides_data, indent=2))
+# Save the JSON data to a file
+output_file_path = 'slides_data.json'
+with open(output_file_path, 'w') as json_file:
+    json.dump(slides_data, json_file, indent=2)
+
+print(f'JSON data saved to {output_file_path}')

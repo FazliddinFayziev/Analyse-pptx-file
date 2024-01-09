@@ -68,20 +68,3 @@ positions_custom = [
 
 # Call the function to add charts to the existing presentation
 create_bar_chart_on_existing(existing_presentation_file, products, data_multiple, chart_title='Multiple Charts', positions=positions_custom, show_values=True, years=years)
-
-
-
-
-def change_presentation_theme(presentation, new_theme_name):
-    # Change the theme of the presentation
-    presentation.slide_master.theme = new_theme_name
-
-# Example usage
-existing_presentation_file = 'done.pptx'
-presentation = Presentation(existing_presentation_file)
-
-# Change the theme (replace 'Office Theme' with the desired theme name)
-change_presentation_theme(presentation, 'Office Theme')
-
-# Save the modified presentation with the new theme
-presentation.save('done.pptx')

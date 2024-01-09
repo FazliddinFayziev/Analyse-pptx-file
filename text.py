@@ -1,63 +1,77 @@
-from pptx import Presentation
 import json
+from pptx import Presentation
+from pptx.util import Inches, Pt
 
-def get_shapes_info(pptx_path):
-    presentation = Presentation(pptx_path)
-    all_slides = []
+# Function to extract text and font size from a shape
+def get_shape_details(shape):
+    text_content = ""
+    font_size = None
+    
+    if shape.has_text_frame:
+        paragraphs = []
+        for paragraph in shape.text_frame.paragraphs:
+            runs = [run.text for run in paragraph.runs]
+            paragraphs.append(' '.join(runs))
+        text_content = '\n'.join(paragraphs)
+        
+        # Getting font size from the first run of the first paragraph
+        if shape.text_frame.paragraphs[0].runs:
+            font_size = shape.text_frame.paragraphs[0].runs[0].font.size
+            font_size = round(font_size.pt, 2) if font_size else None
+    
+    return text_content, font_size
 
+# Function to get image details
+def get_image_details(shape):
+    image_path = {
+        "path": "",  # Placeholder for the image path, which might be extracted differently
+        "width": round(shape.width * Inches(1), 2),
+        "height": round(shape.height * Inches(1), 2),
+        "top": round(shape.top * Inches(1), 2),
+        "left": round(shape.left * Inches(1), 2)
+    }
+    return image_path
+
+# Function to process each slide in the presentation
+def process_slides(presentation):
+    json_data = []
     for slide_index, slide in enumerate(presentation.slides):
         slide_data = {
-            'slide_index': slide_index + 1,
-            'shapes': [],
-            'image_path': []
+            "slide_index": slide_index + 1,
+            "shapes": [],
+            "image_path": []
         }
-
-        index = 0
-        for shape in slide.shapes:
-            shape_info = {
-                'id': index,
-                'width': shape.width,
-                'height': shape.height
-            }
-
-            if shape.has_text_frame:
-                shape_info['text_content'] = ""
-                shape_info['font_size'] = None
-
-                text_frame = shape.text_frame
-
-                for paragraph_index, paragraph in enumerate(text_frame.paragraphs):
-                    for run_index, run in enumerate(paragraph.runs):
-                        shape_info['text_content'] += run.text
-
-                        # Add newline character if it's the end of a paragraph
-                        if run_index == len(paragraph.runs) - 1 and paragraph_index != len(text_frame.paragraphs) - 1:
-                            shape_info['text_content'] += "\n"
-
-                        # Check for font size
-                        if hasattr(run, 'font') and hasattr(run.font, 'size'):
-                            shape_info['font_size'] = run.font.size if run.font.size else None
-
-            elif shape.shape_type == 13:
-                image_info = {
-                    "path": None,
-                    "width": shape.width,
-                    "height": shape.height,
-                    "top": shape.top,
-                    "left": shape.left
+        
+        for shape_id, shape in enumerate(slide.shapes):
+            if shape.shape_type == 13:  # This is a picture
+                slide_data["image_path"].append(get_image_details(shape))
+            else:
+                text_content, font_size = get_shape_details(shape)
+                shape_data = {
+                    "id": shape_id,
+                    "width": round(shape.width * Inches(1), 2),
+                    "height": round(shape.height * Inches(1), 2),
+                    "text_content": text_content,
+                    "font_size": font_size
                 }
-                slide_data['image_path'].append(image_info)
+                slide_data["shapes"].append(shape_data)
+        
+        json_data.append(slide_data)
+    return json_data
 
-            if shape.shape_type != 13:  # Exclude image information from shapes list
-                slide_data['shapes'].append(shape_info)
-                index += 1
+def pptx_to_json(pptx_file_path):
+    presentation = Presentation(pptx_file_path)
+    json_data = process_slides(presentation)
+    return json.dumps(json_data, indent=2)
 
-        all_slides.append(slide_data)
+# Specify the path to your pptx file
+pptx_file_path = 'plan.pptx'
 
-    return all_slides
+# Convert the PPTX to JSON
+json_output = pptx_to_json(pptx_file_path)
 
-# Example usage
-slides_data = get_shapes_info('example.pptx')
+# Output the JSON to a file
+with open('output.json', 'w') as json_file:
+    json_file.write(json_output)
 
-# Print the resulting JSON data
-print(json.dumps(slides_data, indent=2))
+print("JSON data has been generated and written to output.json")
