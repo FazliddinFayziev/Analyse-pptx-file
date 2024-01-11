@@ -1,22 +1,24 @@
-titles_and_sizes = [
-        {'text': '01', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 1654187, 'width': 659642, 'height': 523660}, 
-        {'text': 'Introduction', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 6111524, 'top': 1654187, 'width': 2312980, 'height': 523660}, 
-        {'text': '02', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 2177902, 'width': 659642, 'height': 523660}, 
-        {'text': 'What is addition?', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 5703255, 'top': 2177911, 'width': 2721183, 'height': 523660}, 
-        {'text': '03', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 2701617, 'width': 659642, 'height': 523660}, 
-        {'text': 'Let’s do it!', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 6522463, 'top': 2701613, 'width': 1901698, 'height': 523660}, 
-        {'text': '04', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 3225332, 'width': 659642, 'height': 523660}, 
-        {'text': 'Horizontal & vertical addition', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 3820993, 'top': 3225337, 'width': 4603638, 'height': 523660}, 
-        {'text': '05', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 3749047, 'width': 659642, 'height': 523660}, 
-        {'text': 'Pairs of numbers that add up to 10', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 3350422, 'top': 3749039, 'width': 5074188, 'height': 523660}, 
-        {'text': '06', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 4272762, 'width': 659642, 'height': 523660}, 
-        {'text': 'Mental calculation', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 5549741, 'top': 4272763, 'width': 2874612, 'height': 523660},
-        {'text': 'Sections', 'font_size': 36, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 781336, 'width': 7406667, 'height': 677345}, 
-        {'text': '07', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 4796496, 'width': 659642, 'height': 523660}, 
-        {'text': 'Visual exercises about addition', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 3990393, 'top': 4796487, 'width': 4434045, 'height': 523660}, 
-        {'text': '08', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 1017686, 'top': 5320211, 'width': 659642, 'height': 523660}, 
-        {'text': 'Numerical logic problems', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 3924519, 'top': 5320211, 'width': 4499984, 'height': 523660}, 
-        {'text': 'This template has been created by Slidesgo', 'font_size': 10, 'bold': False, 'font_family': 'Fredoka One', 'left': 2997766, 'top': 6078247, 'width': 3148629, 'height': 287359},
-        {'text': '6+6', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 6351365, 'top': 864851, 'width': 704675, 'height': 329188}, 
-        {'text': '', 'font_size': 25, 'bold': False, 'font_family': 'Fredoka One', 'left': 7830264, 'top': 1197691, 'width': 185601, 'height': 177717}
+[
+  [32, 'Sample PowerPoint File\nSt. Cloud Technical College\n'], 
+  [44, 'This is a Sample Slide\n'], 
+  [32, '◼ You can print out PPT files as handouts \n'], 
+  [32, 'using the \nPRINT > \n'], 
+  [32, 'PRINT WHAT > HANDOUTS option\n◼ Here is an outline of bulleted points\n']
+]
+
+[   
+  {
+    "slide_index": 1,
+    "shapes": [
+      { "id": 0, "text_content": "Sample PowerPoint File", "font_size": None },
+      { "id": 1, "text_content": "St. Cloud Technical College", "font_size": None }
     ]
+  },
+  {
+    "slide_index": 2,
+    "shapes": [
+      { "id": 0, "text_content": "This is a Sample Slide", "font_size": None },
+      { "id": 1, "text_content": "You can print out PPT files as handouts using the PRINT >   PRINT WHAT > HANDOUTS option\nHere is an outline of bulleted points\n", "font_size": None }
+    ]
+  }
+]
