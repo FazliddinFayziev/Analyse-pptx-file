@@ -1,13 +1,11 @@
-from charts import charts
+from charts import charts, legends
 from pptx.util import Inches
 from pptx.dml.color import RGBColor
-from pptx.chart.data import CategoryChartData
-from functions import calculating_all_positions, chart_size
+from functions import calculating_all_positions, chart_size, hex_to_rgb,  get_layout_dimensions
 
 class ChartMaker:
     def make_charts(self, slide, all_charts):
-        W = 10
-        H = 7.5
+        W, H = get_layout_dimensions(slide)
 
         for j, chart_info in enumerate(all_charts):
 
@@ -28,19 +26,26 @@ class ChartMaker:
                 [left, top] = chart_info["position"]
 
             # CHART
-            chart_data = CategoryChartData()
-            chart_data.categories = [category for category in chart_info["productName"]]
+            chart_data = chart_type[1]
+            
+            if "years" in chart_info:
+                if len(chart_info["years"]) > 1:
+                    chart_data.categories = [category for category in chart_info["years"]]
+                else:
+                    chart_data.categories = [category for category in chart_info["productName"]]
+            else:
+                chart_data.categories = [category for category in chart_info["productName"]]
 
             for product, series_data in zip(product_names, chart_info["data"]):
                 chart_data.add_series(product, series_data)
 
             chart = slide.shapes.add_chart(
-                chart_type, Inches(left), Inches(top), Inches(w), Inches(h), chart_data
+                chart_type[0], Inches(left), Inches(top), Inches(w), Inches(h), chart_data
             ).chart
 
             # COLORS
             if "colors" in chart_info:
-                colors = chart_info["colors"]
+                colors = [hex_to_rgb(color) for color in chart_info["colors"]]
                 if len(chart_info["data"]) == 1:
                     if "colors" in chart_info:
                         for i, point in enumerate(chart.series[0].points):
@@ -53,12 +58,10 @@ class ChartMaker:
                                 point.format.fill.solid()
                                 point.format.fill.fore_color.rgb = RGBColor(*colors[i])
 
-            
-
             # SHOW VALUE
-            if "show" in chart_info:
+            if "show" in chart_info and hasattr(chart.plots[0], 'has_data_labels'):
                 chart.plots[0].has_data_labels = chart_info["show"]
-            else:
+            elif hasattr(chart.plots[0], 'has_data_labels'):
                 chart.plots[0].has_data_labels = False
 
             # TITLE
@@ -73,6 +76,9 @@ class ChartMaker:
 
             # LEGEND
             if "legend" in chart_info:
-                chart.has_legend = chart_info["legend"]
+                legend = legends[chart_info["legend"][0]]
+                chart.has_legend = True                               	
+                chart.legend.position = legend
+                chart.legend.include_in_layout = False
             else:
-                chart.has_legend = True
+                chart.has_legend = False
