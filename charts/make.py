@@ -1,84 +1,88 @@
-from charts import charts, legends
+from charts import charts
 from pptx.util import Inches
 from pptx.dml.color import RGBColor
-from functions import calculating_all_positions, chart_size, hex_to_rgb,  get_layout_dimensions
+from pptx.enum.chart import XL_MARKER_STYLE 
+from functions import position, size_value, axis, label_value, get_layout_dimensions, format_data_for_xy_scatter, chart_colors, legend_value, years, font, title
 
 class ChartMaker:
     def make_charts(self, slide, all_charts):
         W, H = get_layout_dimensions(slide)
 
-        for j, chart_info in enumerate(all_charts):
+        for chart_info in all_charts:
 
             product_names = chart_info["productName"]
-            chart_type = charts[chart_info["chartType"]]
+            chart_type = charts[chart_info["chartType"].upper()]
 
             # SIZE
-            if type(chart_info["size"][0]) == str:
-                [w, h] = chart_size(chart_info["size"][0])
-            else:
-                [w, h] = chart_info["size"]
+            [w, h] = size_value(chart_info["size"])
 
             # POSITION
-            if type(chart_info["position"][0]) == str:
-                position = chart_info["position"][0]
-                [left, top] = calculating_all_positions(position, W, H, w, h)
-            else:
-                [left, top] = chart_info["position"]
+            [left, top] = position(chart_info["position"], W, H, w, h)
 
             # CHART
             chart_data = chart_type[1]
             
-            if "years" in chart_info:
-                if len(chart_info["years"]) > 1:
-                    chart_data.categories = [category for category in chart_info["years"]]
-                else:
-                    chart_data.categories = [category for category in chart_info["productName"]]
-            else:
-                chart_data.categories = [category for category in chart_info["productName"]]
+            # YEARS
+            years(chart_info, chart_data)
+            
+            if chart_type[2] == 1:
+                for product, series_data in zip(product_names, chart_info["data"]):
+                    chart_data.add_series(product, series_data)
+                
+                chart = slide.shapes.add_chart(
+                    chart_type[0], Inches(left), Inches(top), Inches(w), Inches(h), chart_data
+                ).chart
+                
+                
+            elif chart_type[2] == 2:
+                for product, series_data in zip(product_names, chart_info["data"]):
+                    series = chart_data.add_series(product)
+                    x_value, y_value, size = series_data
+                    series.add_data_point(x_value, y_value, size)
 
-            for product, series_data in zip(product_names, chart_info["data"]):
-                chart_data.add_series(product, series_data)
+                chart = slide.shapes.add_chart(
+                    chart_type[0], Inches(left), Inches(top), Inches(w), Inches(h), chart_data
+                ).chart
+                
+            
+            elif chart_type[2] == 3:
+                data = format_data_for_xy_scatter(chart_info["data"], chart_info["years"])
+                for product, series_data in zip(product_names, data):
+                    series = chart_data.add_series(product)
+                    for point in series_data:
+                        series.add_data_point(point[0], point[1])
 
-            chart = slide.shapes.add_chart(
-                chart_type[0], Inches(left), Inches(top), Inches(w), Inches(h), chart_data
-            ).chart
+                chart = slide.shapes.add_chart(
+                    chart_type[0], Inches(left), Inches(top), Inches(w), Inches(h), chart_data
+                ).chart
+
+                for idx, color in enumerate(chart_info["colors"]):
+                    series = chart.series[idx]
+                    try:
+                        series.marker.style = getattr(XL_MARKER_STYLE, chart_info["marker"][idx].upper())
+                    except IndexError:
+                        series.marker.style = XL_MARKER_STYLE.CIRCLE
+                    series.marker.size = 8
+                    fill = series.format.fill
+                    fill.solid()
+                    fill.fore_color.rgb = RGBColor.from_string(color[1:])
 
             # COLORS
-            if "colors" in chart_info:
-                colors = [hex_to_rgb(color) for color in chart_info["colors"]]
-                if len(chart_info["data"]) == 1:
-                    if "colors" in chart_info:
-                        for i, point in enumerate(chart.series[0].points):
-                            point.format.fill.solid()
-                            point.format.fill.fore_color.rgb = RGBColor(*colors[i])
-                else: 
-                    for i, series in enumerate(chart.series):
-                        for point in series.points:
-                            if i < len(colors):
-                                point.format.fill.solid()
-                                point.format.fill.fore_color.rgb = RGBColor(*colors[i])
+            chart_colors(chart_info, chart)
 
             # SHOW VALUE
-            if "show" in chart_info and hasattr(chart.plots[0], 'has_data_labels'):
-                chart.plots[0].has_data_labels = chart_info["show"]
-            elif hasattr(chart.plots[0], 'has_data_labels'):
-                chart.plots[0].has_data_labels = False
+            label_value(chart_info, chart)
 
             # TITLE
-            chart.has_title = True
-            chart.chart_title.text_frame.text = chart_info["chartTitle"]
+            title(chart, chart_info["chartTitle"])
 
             # FONT LOGIC
-            if chart.has_title:
-                title_format = chart.chart_title.text_frame.paragraphs[0]
-                title_format.font.bold = False
-                title_format.font.name = 'Arial'
+            font(chart)
 
             # LEGEND
-            if "legend" in chart_info:
-                legend = legends[chart_info["legend"][0]]
-                chart.has_legend = True                               	
-                chart.legend.position = legend
-                chart.legend.include_in_layout = False
-            else:
-                chart.has_legend = False
+            legend_value(chart_info, chart)
+            
+            # AXIS
+            # axis(chart, chart_info)
+            
+                
